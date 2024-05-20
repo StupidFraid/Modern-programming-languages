@@ -6,8 +6,8 @@
                 "${workspaceFolder}/**",
                 "/usr/include",
                 "/usr/local/include",
-                "/usr/include/c++/14",  // Замените на вашу версию GCC
-                "/usr/include/c++/14/x86_64-redhat-linux"  // Замените на вашу версию GCC
+                "/usr/include/c++/14",  
+                "/usr/include/c++/14/x86_64-redhat-linux" 
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",
