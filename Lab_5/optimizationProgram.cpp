@@ -1,16 +1,23 @@
-#include <stdio.h>
-int main(void){
-    char ch, name[50];
-    
-    printf("Введите имя файла для просмотра: ");
-    scanf("%s", name);
+#include <iostream>
+#include <fstream>
+#include <string>
 
-    FILE *in = fopen(name, "r");
-    if (in == NULL){
-        printf("Файл %s не открыт. Т.к. вероятно не существует. \n", name);
+int main() {
+    std::string name;
+    
+    std::cout << "Введите имя файла для просмотра: ";
+    std::cin >> name;
+
+    std::ifstream in(name);
+    if (!in.is_open()) {
+        std::cerr << "Файл " << name << " не открыт. Т.к. вероятно не существует.\n";
         return 1;
     }
-   while ((ch = fgetc(in)) != EOF) {
-    putchar(ch);
+
+    char ch;
+    while (in.get(ch)) {
+        std::cout.put(ch);
     }
+
+    return 0;
 }

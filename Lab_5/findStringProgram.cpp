@@ -1,88 +1,84 @@
-#include <stdio.h>
-#include <string.h>
+#include <iostream>
+#include <fstream>
+#include <string>
 
-void findString(FILE *in, const char *substring, FILE *out){
-    char line[1000];
-    int lineNumber, found = 0;
+void findString(std::ifstream &in, const std::string &substring, std::ofstream &out) {
+    std::string line;
+    int lineNumber = 0;
+    bool found = false;
 
     // Найдем подстроку в каждой строке файла
-    while (fgets(line, sizeof(line), in) != NULL)
-    {
+    while (std::getline(in, line)) {
         lineNumber++;
-        if (strstr(line, substring) != NULL){
-            found = 1;
-            fprintf(out, "Строка %d: %s", lineNumber, line);
+        if (line.find(substring) != std::string::npos) {
+            found = true;
+            out << "Строка " << lineNumber << ": " << line << "\n";
         }
     }
 
     if (!found) {
-        fprintf(out, "Строка \"%s\" не найдена в файле.\n", substring );
+        out << "Строка \"" << substring << "\" не найдена в файле.\n";
     }
-    
 }
 
+int main() {
+    std::string name, substring, outputFile;
 
-int main(void){
-    char ch, name[50], substring[100], outputFile[50];
-    
-    
-    printf("Введите имя файла для просмотра: ");
-    scanf("%s", name);
+    std::cout << "Введите имя файла для просмотра: ";
+    std::cin >> name;
 
-    FILE *in = fopen(name, "r");
-    if (in == NULL){
-        printf("Файл %s не открыт. Т.к. вероятно не существует. \n", name);
+    std::ifstream in(name);
+    if (!in) {
+        std::cerr << "Файл " << name << " не открыт. Т.к. вероятно не существует.\n";
         return 1;
     }
 
-    printf("Введите строку для поиска в файле: ");
-    scanf("%s", substring);
+    std::cout << "Введите строку для поиска в файле: ";
+    std::cin >> substring;
 
-    printf("Введите имя файла для записи результатов: ");
-    scanf("%s", outputFile);
+    std::cout << "Введите имя файла для записи результатов: ";
+    std::cin >> outputFile;
 
-    FILE *out = fopen(outputFile, "w");
-    if (out == NULL) {
-        printf("Файл %s не может быть открыт для записи. \n", outputFile);
-        fclose(in); //закрываем исходный файл
+    std::ofstream out(outputFile);
+    if (!out) {
+        std::cerr << "Файл " << outputFile << " не может быть открыт для записи.\n";
+        in.close();
         return 1;
     }
 
-
-    while ((ch = fgetc(in)) != EOF )
-    {
-        putchar(ch);
+    // Вывод содержимого входного файла
+    char ch;
+    while (in.get(ch)) {
+        std::cout.put(ch);
     }
 
-    
-    //Возвращаемся к началу входного файла
-    rewind(in);
+    // Возвращаемся к началу входного файла
+    in.clear();
+    in.seekg(0, std::ios::beg);
 
-    //Найдем введеную строку и записываем результаты в входной файл
+    // Найдем введеную строку и запишем результаты в выходной файл
     findString(in, substring, out);
 
-    printf("\nРезульат поиска записаны в файл %s\n", outputFile);
+    std::cout << "\nРезультат поиска записан в файл " << outputFile << "\n";
 
-    //Возвращаемся к началу выходного файла
-    rewind(out);
-    //Закрываем исходный файл и выходной
-    fclose(in);
-    fclose(out);
+    in.close();
+    out.close();
 
-    // Снова открываем файл для чтения
-    out = fopen(outputFile, "r");
-    if (out == NULL) {
-        printf("Файл %s не может быть открыт для чтения.\n", outputFile);
+    // Снова открываем файл для чтения и вывода результатов
+    std::ifstream result(outputFile);
+    if (!result) {
+        std::cerr << "Файл " << outputFile << " не может быть открыт для чтения.\n";
         return 1;
     }
 
-    printf("\n================================================= \n");
-    printf("Содержимое файла с результатами: \n\n\n");
-    while ((ch = fgetc(out)) != EOF){
-        putchar(ch);
+    std::cout << "\n=================================================\n";
+    std::cout << "Содержимое файла с результатами:\n\n";
+    while (result.get(ch)) {
+        std::cout.put(ch);
     }
-    printf("\n");
-    fclose(out);
+    std::cout << "\n=================================================\n";
+
+    result.close();
 
     return 0;
 }

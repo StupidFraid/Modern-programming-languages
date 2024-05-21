@@ -1,43 +1,46 @@
-#include <stdio.h>
-#include <ctype.h>
+#include <iostream>
+#include <fstream>
+#include <cctype>
+#include <string>
 
-void countCharacters(FILE *file, int *emptyCount, int *nonEmptyCount) {
+void countCharacters(std::ifstream &file, int &emptyCount, int &nonEmptyCount) {
     char ch;
-    *emptyCount = *nonEmptyCount = 0;
-    while ((ch = fgetc(file)) != EOF) {
+    emptyCount = nonEmptyCount = 0;
+    while (file.get(ch)) {
         if (isspace(ch) || iscntrl(ch)) {
-            (*emptyCount)++;
+            emptyCount++;
         } else {
-            (*nonEmptyCount)++;
+            nonEmptyCount++;
         }
     }
 }
 
-int main(void) {
-    char name[50];
+int main() {
+    std::string name;
     int emptyCount, nonEmptyCount;
 
-    printf("Введите имя файла для просмотра: ");
-    scanf("%s", name);
+    std::cout << "Введите имя файла для просмотра: ";
+    std::cin >> name;
 
-    FILE *in = fopen(name, "r");
-    if (in == NULL) {
-        printf("Файл %s не открыт. Т.к. вероятно не существует.\n", name);
+    std::ifstream in(name);
+    if (!in.is_open()) {
+        std::cerr << "Файл " << name << " не открыт. Т.к. вероятно не существует.\n";
         return 1;
     }
 
     char ch;
-    while ((ch = fgetc(in)) != EOF) {
-        putchar(ch);
+    while (in.get(ch)) {
+        std::cout.put(ch);
     }
     // Перемотка файла в начало для подсчета символов
-    rewind(in);
+    in.clear();  // Сброс состояния потока
+    in.seekg(0, std::ios::beg);
 
     // Подсчет пустых и непустых символов
-    countCharacters(in, &emptyCount, &nonEmptyCount);
-    printf("Пустые символы: %d\n", emptyCount);
-    printf("Непустые символы: %d\n", nonEmptyCount);
+    countCharacters(in, emptyCount, nonEmptyCount);
+    std::cout << "Пустые символы: " << emptyCount << "\n";
+    std::cout << "Непустые символы: " << nonEmptyCount << "\n";
 
-    fclose(in);
+    in.close();
     return 0;
 }

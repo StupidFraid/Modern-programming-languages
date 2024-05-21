@@ -1,16 +1,24 @@
-#include <stdio.h>
-int main(void){
-    char ch, name[50];
-    FILE *in;
-    printf("Введите имя файла для просмотра: ");
-    scanf("%s", name);
-    if((in=fopen(name, "r"))==NULL)
-        printf("Файл %s не открыт \n", name);
-    else
-        while (!feof(in))
-        {
-            ch=getc(in);
-                putchar(ch);
+#include <iostream>
+#include <fstream>
+#include <string>
+
+int main() {
+    std::string name;
+    std::ifstream in;
+
+    std::cout << "Введите имя файла для просмотра: ";
+    std::cin >> name;
+
+    in.open(name);
+    if (!in) {
+        std::cerr << "Файл " << name << " не открыт\n";
+    } else {
+        char ch;
+        while (in.get(ch)) {
+            std::cout.put(ch);
         }
-        return 0;
+        in.close();
+    }
+
+    return 0;
 }
